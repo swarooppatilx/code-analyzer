@@ -11,8 +11,14 @@
     <meta property="og:title" content="Code Complexity Analyzer">
     <meta property="og:description" content="Analyze the complexity of your code and optimize it effectively. Get insights into time and space complexity.">
     <meta property="og:image" content="{{ url_for('static', filename='og-image.jpg') }}">
-    <meta property="og:url" content="https://www.yourwebsite.com">
+    <meta property="og:site_name" content="Code Complexity Analyzer">
+    <meta property="og:url" content="https://code-complexity-analyzer.vercel.app/">
     <meta property="og:type" content="website">
+
+    <meta property="twitter:image" content="{{ url_for('static', filename='og-image.jpg') }}">
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Code Complexity Analyzer">
+    <meta property="twitter:description" content="Analyze the complexity of your code with our Code Complexity Analyzer. Get insights into time and space complexity and optimize your code effectively.">
 
     <title>Code Complexity Analyzer</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
@@ -35,7 +41,7 @@
 </head>
 
 <body class="bg-gray-100">
-    <div class="container mx-auto mt-10">
+    <div class="container mx-auto mt-10 px-4">
         <div class="bg-white p-6 rounded-lg shadow-md relative">
             <div id="spinner" class="flex justify-center items-center">
                 <svg class="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -55,12 +61,12 @@
                 <h2 class="text-xl font-semibold">Complexity Analysis</h2>
                 <div id="analysisOutput" class="mt-2 p-3 bg-white rounded-lg shadow overflow-x-auto"></div>
                 <h3 class="text-lg font-semibold mt-4">Visualization</h3>
-                <div class="flex justify-between mt-2">
-                    <div class="w-1/2">
+                <div class="flex flex-col sm:flex-row justify-between mt-2">
+                    <div class="w-full sm:w-1/2 mb-4 sm:mb-0">
                         <canvas id="timeComplexityChart" class="h-32"></canvas>
                         <h4 class="text-center">Time Complexity</h4>
                     </div>
-                    <div class="w-1/2">
+                    <div class="w-full sm:w-1/2">
                         <canvas id="spaceComplexityChart" class="h-32"></canvas>
                         <h4 class="text-center">Space Complexity</h4>
                     </div>
