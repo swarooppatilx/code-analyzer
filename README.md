@@ -32,10 +32,11 @@ To get a local copy up and running, follow these steps:
 ### Installation
 
 1. **Clone the repository**:
-   ```bash
+```bash
    git clone https://github.com/swarooppatilx/code-analyzer.git
    cd code-analyzer
 ```
+
 2. **Creating a virtual environment**:
 ```bash
  # On Linux/MacOS
