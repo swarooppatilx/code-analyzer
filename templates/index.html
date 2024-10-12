@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Complexity Analyzer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+</head>
+<body class="bg-gray-100">
+
+    <div class="container mx-auto mt-10">
+        <div class="bg-white p-6 rounded shadow-md">
+            <h1 class="text-2xl font-bold mb-4">Code Complexity Analyzer</h1>
+            <form id="codeForm">
+                <label for="codeInput" class="block mb-2 text-lg">Enter your code:</label>
+                <textarea id="codeInput" class="w-full p-2 border rounded" rows="8" placeholder="Paste your code here..."></textarea>
+                <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Analyze Code
+                </button>
+            </form>
+
+            <!-- Structured Output Section -->
+            <div id="analysisResult" class="mt-6 p-4 bg-gray-100 rounded hidden">
+                <h2 class="text-xl font-semibold">Complexity Analysis</h2>
+
+                <!-- Time Complexity Section -->
+                <div id="timeComplexity" class="mt-4">
+                    <h3 class="font-bold">Time Complexity:</h3>
+                    <ul class="list-disc list-inside">
+                        <li id="bestCase"></li>
+                        <li id="averageCase"></li>
+                        <li id="worstCase"></li>
+                    </ul>
+                </div>
+
+                <!-- Space Complexity Section -->
+                <div id="spaceComplexity" class="mt-4">
+                    <h3 class="font-bold">Space Complexity:</h3>
+                    <p id="spaceOutput"></p>
+                </div>
+
+                <!-- Summary Section -->
+                <div id="summary" class="mt-4">
+                    <h3 class="font-bold">Summary:</h3>
+                    <p id="summaryOutput"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('codeForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const code = document.getElementById('codeInput').value;
+
+            fetch('/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ code: code }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.timeComplexity) {
+                    // Update the time complexity fields
+                    document.getElementById('bestCase').textContent = `Best Case: ${data.timeComplexity.bestCase}`;
+                    document.getElementById('averageCase').textContent = `Average Case: ${data.timeComplexity.averageCase}`;
+                    document.getElementById('worstCase').textContent = `Worst Case: ${data.timeComplexity.worstCase}`;
+
+                    // Update the space complexity
+                    document.getElementById('spaceOutput').textContent = data.spaceComplexity;
+
+                    // Update the summary
+                    document.getElementById('summaryOutput').textContent = data.summary;
+
+                    // Display the analysis result section
+                    document.getElementById('analysisResult').classList.remove('hidden');
+                } else {
+                    document.getElementById('bestCase').textContent = 'Error: Could not analyze the code.';
+                    document.getElementById('analysisResult').classList.remove('hidden');
+                }
+            })
+            .catch(error => {
+                document.getElementById('bestCase').textContent = 'Error: ' + error;
+                document.getElementById('analysisResult').classList.remove('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
