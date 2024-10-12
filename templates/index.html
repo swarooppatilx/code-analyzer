@@ -1,58 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Code Complexity Analyzer</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <style>
+        #spinner {
+            display: none;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        textarea {
+            height: 400px;
+        }
+    </style>
 </head>
+
 <body class="bg-gray-100">
 
     <div class="container mx-auto mt-10">
-        <div class="bg-white p-6 rounded shadow-md">
-            <h1 class="text-2xl font-bold mb-4">Code Complexity Analyzer</h1>
+        <div class="bg-white p-6 rounded-lg shadow-md relative">
+            <div id="spinner" class="flex justify-center items-center">
+                <svg class="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v2a6 6 0 100 12v2a8 8 0 01-8-8z"></path>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Code Complexity Analyzer</h1>
             <form id="codeForm">
-                <label for="codeInput" class="block mb-2 text-lg">Enter your code:</label>
-                <textarea id="codeInput" class="w-full p-2 border rounded" rows="8" placeholder="Paste your code here..."></textarea>
-                <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <label for="codeInput" class="block mb-2 text-lg text-gray-700">Enter your code:</label>
+                <textarea id="codeInput" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 language-js" rows="8" placeholder="Paste your code here..."></textarea>
+                <button type="submit" class="mt-4 w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition duration-200">
                     Analyze Code
                 </button>
             </form>
-
-            <!-- Structured Output Section -->
-            <div id="analysisResult" class="mt-6 p-4 bg-gray-100 rounded hidden">
+            <div id="analysisResult" class="mt-6 p-4 bg-gray-50 rounded-lg hidden shadow-inner">
                 <h2 class="text-xl font-semibold">Complexity Analysis</h2>
-
-                <!-- Time Complexity Section -->
-                <div id="timeComplexity" class="mt-4">
-                    <h3 class="font-bold">Time Complexity:</h3>
-                    <ul class="list-disc list-inside">
-                        <li id="bestCase"></li>
-                        <li id="averageCase"></li>
-                        <li id="worstCase"></li>
-                    </ul>
+                <div id="analysisOutput" class="mt-2 p-3 bg-white rounded-lg shadow overflow-x-auto"></div>
+                <h3 class="text-lg font-semibold mt-4">Visualization</h3>
+                <div class="flex justify-between mt-2">
+                    <div class="w-1/2">
+                        <canvas id="timeComplexityChart" class="h-32"></canvas>
+                        <h4 class="text-center">Time Complexity</h4>
+                    </div>
+                    <div class="w-1/2">
+                        <canvas id="spaceComplexityChart" class="h-32"></canvas>
+                        <h4 class="text-center">Space Complexity</h4>
+                    </div>
                 </div>
-
-                <!-- Space Complexity Section -->
-                <div id="spaceComplexity" class="mt-4">
-                    <h3 class="font-bold">Space Complexity:</h3>
-                    <p id="spaceOutput"></p>
-                </div>
-
-                <!-- Summary Section -->
-                <div id="summary" class="mt-4">
-                    <h3 class="font-bold">Summary:</h3>
-                    <p id="summaryOutput"></p>
+                <h3 class="text-lg font-semibold mt-4">Optimized Code</h3>
+                <div id="optimizedCode" class="mt-2 p-3 bg-white rounded-lg shadow overflow-x-auto">
+                    <pre><code class="language-js"></code></pre>
                 </div>
             </div>
+            <div aria-live="polite" class="mt-4" id="feedbackMessage"></div> <!-- Live region for feedback -->
         </div>
     </div>
 
     <script>
-        document.getElementById('codeForm').addEventListener('submit', function(event) {
+        let timeComplexityChart = null; // Store the chart instance for time complexity
+        let spaceComplexityChart = null; // Store the chart instance for space complexity
+    
+        document.getElementById('codeForm').addEventListener('submit', function (event) {
             event.preventDefault();
             const code = document.getElementById('codeInput').value;
-
+    
+            // Show spinner
+            document.getElementById('spinner').style.display = 'flex';
+    
             fetch('/analyze', {
                 method: 'POST',
                 headers: {
@@ -62,30 +85,177 @@
             })
             .then(response => response.json())
             .then(data => {
+                // Hide spinner
+                document.getElementById('spinner').style.display = 'none';
+    
                 if (data.timeComplexity) {
-                    // Update the time complexity fields
-                    document.getElementById('bestCase').textContent = `Best Case: ${data.timeComplexity.bestCase}`;
-                    document.getElementById('averageCase').textContent = `Average Case: ${data.timeComplexity.averageCase}`;
-                    document.getElementById('worstCase').textContent = `Worst Case: ${data.timeComplexity.worstCase}`;
-
-                    // Update the space complexity
-                    document.getElementById('spaceOutput').textContent = data.spaceComplexity;
-
-                    // Update the summary
-                    document.getElementById('summaryOutput').textContent = data.summary;
-
-                    // Display the analysis result section
+                    // Render analysis result in HTML
+                    document.getElementById('analysisOutput').innerHTML = `
+                        <strong class="text-gray-800">Time Complexity:</strong> <br>
+                        <span class="text-gray-600">Best Case: ${data.timeComplexity.bestCase}</span><br>
+                        <span class="text-gray-600">Average Case: ${data.timeComplexity.averageCase}</span><br>
+                        <span class="text-gray-600">Worst Case: ${data.timeComplexity.worstCase}</span><br>
+                        <strong class="text-gray-800">Space Complexity:</strong> <span class="text-gray-600">${data.spaceComplexity}</span><br>
+                        <strong class="text-gray-800">Summary:</strong> <span class="text-gray-600">${data.summary || "No summary provided."}</span>
+                    `;
+                    document.getElementById('optimizedCode').innerHTML = `
+                        <pre><code class="language-js">${data.optimizedCode || "No optimized code provided."}</code></pre>
+                    `;
+                    Prism.highlightAll(); // Apply syntax highlighting
                     document.getElementById('analysisResult').classList.remove('hidden');
+    
+                    // Prepare data for the charts
+                    const timeComplexity = data.timeComplexity;
+    
+                    // Clear existing charts
+                    clearCharts();
+    
+                    const timeLabels = ['Best Case', 'Average Case', 'Worst Case'];
+                    const timeValues = [
+                        generateTrendlineData(timeComplexity.bestCase),
+                        generateTrendlineData(timeComplexity.averageCase),
+                        generateTrendlineData(timeComplexity.worstCase),
+                    ];
+    
+                    const spaceValue = parseComplexityToNumber(data.spaceComplexity);
+    
+                    createChart('timeComplexityChart', timeLabels, timeValues, 'timeComplexityChart');
+                    createChart('spaceComplexityChart', ['Space Complexity'], [spaceValue], 'spaceComplexityChart');
                 } else {
-                    document.getElementById('bestCase').textContent = 'Error: Could not analyze the code.';
-                    document.getElementById('analysisResult').classList.remove('hidden');
+                    showError('Error: Could not analyze the code.');
                 }
             })
             .catch(error => {
-                document.getElementById('bestCase').textContent = 'Error: ' + error;
-                document.getElementById('analysisResult').classList.remove('hidden');
+                // Hide spinner
+                document.getElementById('spinner').style.display = 'none';
+                showError('Error: ' + error.message);
             });
         });
+    
+        function showError(message) {
+            document.getElementById('analysisOutput').innerHTML = '';
+            document.getElementById('optimizedCode').innerHTML = '';
+            document.getElementById('analysisResult').classList.remove('hidden');
+            document.getElementById('feedbackMessage').innerText = message; // Set error message for feedback
+        }
+    
+        function parseComplexityToNumber(complexity) {
+            // Ensure complexity is a string
+            if (typeof complexity !== 'string') {
+                console.error('Expected a string for complexity, got:', complexity);
+                return 0; // Return a default value
+            }
+    
+            complexity = complexity.trim(); // Trim whitespace
+    
+            if (complexity === "O(1)") return 1;
+            if (complexity === "O(n)") return 100;  // Example values
+            if (complexity === "O(n^2)") return 200; // Example values
+            if (complexity === "O(log n)") return 50; // Example values
+            return 0;
+        }
+    
+        function generateTrendlineData(complexity) {
+            const dataPoints = [];
+            for (let n = 1; n <= 100; n++) { // Generate data points for n from 1 to 100
+                let value;
+                switch (complexity) {
+                    case "O(1)":
+                        value = 1;
+                        break;
+                    case "O(n)":
+                        value = n;
+                        break;
+                    case "O(n^2)":
+                        value = n * n;
+                        break;
+                    case "O(log n)":
+                        value = Math.log(n); // Using natural log for simplicity
+                        break;
+                    default:
+                        value = 0;
+                }
+                dataPoints.push(value);
+            }
+            return dataPoints;
+        }
+    
+        function clearCharts() {
+            // Destroy existing charts if they exist
+            if (timeComplexityChart) {
+                timeComplexityChart.destroy();
+                timeComplexityChart = null;
+            }
+            if (spaceComplexityChart) {
+                spaceComplexityChart.destroy();
+                spaceComplexityChart = null;
+            }
+        }
+    
+        function createChart(canvasId, labels, values, chartType) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            const chartData = {
+                labels: labels,
+                datasets: [{
+                    label: 'Complexity',
+                    data: values,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    fill: false,
+                }]
+            };
+    
+            // Create new chart instance based on the chart type
+            if (chartType === 'timeComplexityChart') {
+                timeComplexityChart = new Chart(ctx, {
+                    type: 'line', // Use line chart for better trend visualization
+                    data: chartData,
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Complexity Value'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Input Size (n)'
+                                }
+                            }
+                        }
+                    }
+                });
+            } else if (chartType === 'spaceComplexityChart') {
+                spaceComplexityChart = new Chart(ctx, {
+                    type: 'bar', // Use bar chart for space complexity
+                    data: chartData,
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Complexity Value'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Complexity'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
     </script>
+    
 </body>
+
 </html>
