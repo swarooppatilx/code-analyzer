@@ -37,6 +37,10 @@
         textarea {
             height: 400px;
         }
+        canvas {
+    width: 100% !important;
+    max-height: 400px;
+}
     </style>
 </head>
 
@@ -49,7 +53,7 @@
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v2a6 6 0 100 12v2a8 8 0 01-8-8z"></path>
                 </svg>
             </div>
-            <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Code Complexity Analyzer</h1>
+            <h1 class="text-3xl md:text-4xl font-bold mb-6 text-center text-gray-800">Code Complexity Analyzer</h1>
             <form id="codeForm">
                 <label for="codeInput" class="block mb-2 text-lg text-gray-700">Enter your code:</label>
                 <textarea id="codeInput" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 language-js" rows="8" placeholder="Paste your code here..."></textarea>
@@ -58,20 +62,20 @@
                 </button>
             </form>
             <div id="analysisResult" class="mt-6 p-4 bg-gray-50 rounded-lg hidden shadow-inner">
-                <h2 class="text-xl font-semibold">Complexity Analysis</h2>
+                <h2 class="text-xl md:text-2xl font-semibold">Complexity Analysis</h2>
                 <div id="analysisOutput" class="mt-2 p-3 bg-white rounded-lg shadow overflow-x-auto"></div>
-                <h3 class="text-lg font-semibold mt-4">Visualization</h3>
+                <h3 class="text-lg md:text-xl font-semibold mt-4">Visualization</h3>
                 <div class="flex flex-col sm:flex-row justify-between mt-2">
                     <div class="w-full sm:w-1/2 mb-4 sm:mb-0">
-                        <canvas id="timeComplexityChart" class="h-32"></canvas>
-                        <h4 class="text-center">Time Complexity</h4>
+                        <canvas id="timeComplexityChart" class="h-24 sm:h-32"></canvas>
+                        <h4 class="text-center text-sm md:text-base">Time Complexity</h4>
                     </div>
                     <div class="w-full sm:w-1/2">
-                        <canvas id="spaceComplexityChart" class="h-32"></canvas>
-                        <h4 class="text-center">Space Complexity</h4>
+                        <canvas id="spaceComplexityChart" class="h-24 sm:h-32"></canvas>
+                        <h4 class="text-center text-sm md:text-base">Space Complexity</h4>
                     </div>
                 </div>
-                <h3 class="text-lg font-semibold mt-4">Optimized Code</h3>
+                <h3 class="text-lg md:text-xl font-semibold mt-4">Optimized Code</h3>
                 <div id="optimizedCode" class="mt-2 p-3 bg-white rounded-lg shadow overflow-x-auto">
                     <pre><code class="language-js"></code></pre>
                 </div>
