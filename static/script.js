@@ -2,35 +2,6 @@ document.addEventListener("DOMContentLoaded", function() {
     console.log("JavaScript file is linked and loaded.");
     let timeComplexityChart = null;
     let spaceComplexityChart = null;
-    
-
-    class Stack {
-        constructor() {
-            this.items = [];
-        }
-
-        push(item) {
-            this.items.push(item);
-        }
-
-        pop() {
-            return this.items.pop();
-        }
-
-        peek() {
-            return this.items[this.items.length - 1];
-        }
-
-        isEmpty() {
-            return this.items.length === 0;
-        }
-
-        size() {
-            return this.items.length;
-        }
-    }
-
-    const codeStack = new Stack();
 
     document.getElementById('codeForm').addEventListener('submit', function (event) {
         event.preventDefault();
@@ -59,28 +30,6 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('spinner').style.display = 'none';
             showError('Error: An error occurred while analyzing the code.');
         });
-    });
-
-    document.getElementById('saveCodeBtn').addEventListener('click', function (event) {
-        event.preventDefault();
-        const code = document.getElementById('codeInput').value;
-        if (code) {
-            codeStack.push(code);
-            showFeedback(`Code snippet saved. Total snippets: ${codeStack.size()}`);
-        } else {
-            showError('Error: No code to save.');
-        }
-    });
-
-    document.getElementById('loadCodeBtn').addEventListener('click', function (event) {
-        event.preventDefault();
-        if (!codeStack.isEmpty()) {
-            const lastCode = codeStack.pop();
-            document.getElementById('codeInput').value = lastCode;
-            showFeedback(`Loaded last saved code snippet. Total snippets remaining: ${codeStack.size()}`);
-        } else {
-            showError('Error: No saved code snippets to load.');
-        }
     });
 
     function displayAnalysisResults(data) {
@@ -229,20 +178,16 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function showError(message) {
-        const feedback = document.getElementById('feedback');
-        feedback.innerHTML = `<span class="text-red-500">${message}</span>`;
-        feedback.classList.remove('hidden');
-        setTimeout(() => {
-            feedback.classList.add('hidden');
-        }, 5000);
+        const feedback = document.getElementById('feedbackMessage');
+        feedback.innerHTML = `<div class="text-red-600">${message}</div>`;
     }
 
-    function showFeedback(message) {
-        const feedback = document.getElementById('feedback');
-        feedback.innerHTML = `<span class="text-green-500">${message}</span>`;
-        feedback.classList.remove('hidden');
-        setTimeout(() => {
-            feedback.classList.add('hidden');
-        }, 5000);
-    }
+    window.addEventListener('resize', function() {
+        if (timeComplexityChart) {
+            timeComplexityChart.resize();
+        }
+        if (spaceComplexityChart) {
+            spaceComplexityChart.resize();
+        }
+    });
 });

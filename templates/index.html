@@ -44,9 +44,9 @@
             transform: translate(-50%, -50%);
         }
         canvas {
-            width: 100% !important;
-            max-height: 400px;
-        }
+    width: 100% !important;
+    max-height: 400px;
+}
     </style>
 </head>
 
@@ -63,22 +63,12 @@
             <form id="codeForm">
                 <label for="codeInput" class="block mb-2 text-lg text-gray-700">Enter your code:</label>
                 <textarea id="codeInput" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 language-js h-32 sm:h-48 md:h-64 lg:h-80 xl:h-96" rows="8" placeholder="Paste your code here..."></textarea>
-                <div class="flex justify-between mt-4">
-                    <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition duration-200 mr-2">
-                        Analyze Code
-                    </button>
-                    <button id="saveCodeBtn" class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 rounded-lg transition duration-200 mr-2">
-                        Save Code
-                    </button>
-                    <button id="loadCodeBtn" class="w-full bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 rounded-lg transition duration-200">
-                        Load Previous Code
-                    </button>
-                </div>
+                <button type="submit" class="mt-4 w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition duration-200">
+                    Analyze Code
+                </button>
             </form>
-
             <div id="analysisResult" class="mt-6 p-4 bg-gray-50 rounded-lg hidden shadow-inner">
                 <h2 class="text-xl md:text-2xl font-semibold">Complexity Analysis</h2>
-                <div id="feedback" class="hidden"></div>
                 <div id="analysisOutput" class="mt-2 p-3 bg-white rounded-lg shadow overflow-x-auto"></div>
                 <h3 class="text-lg md:text-xl font-semibold mt-4">Visualization</h3>
                 <div class="flex flex-col sm:flex-row justify-between mt-2">
